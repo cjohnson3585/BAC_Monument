@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>BAC Converter</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+div {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+/* Style the header */
+header {
+  background-color: #666;
+  padding: 30px;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+}
+
+/* Container for flexboxes */
+section {
+  display: -webkit-flex;
+  display: flex;
+}
+
+/* Style the navigation menu */
+nav {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  background: #ccc;
+  padding: 20px;
+}
+
+/* Style the list inside the menu */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Style the content */
+article {
+  -webkit-flex: 3;
+  -ms-flex: 3;
+  flex: 3;
+  background-color: #f1f1f1;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Style the footer */
+footer {
+  background-color: #777;
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+/* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
+@media (max-width: 600px) {
+  section {
+    -webkit-flex-direction: column;
+    flex-direction: column;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h2>Blood Alcohol Content Converter</h2>
+</header>
+
+<section> 
+  <article>
+  <div>
+    <div>
+    Check one:
+      <input type="checkbox" id="Male" name="Male" value="0.68">
+      <label for="Male">Male</label>
+      <input type="checkbox" id="Female" name="Female" value="0.55">
+      <label for="Female">Female</label>
+    </div>
+    <div>
+    <select id="select1"> 
+            <option value="1.0">1</option> 
+            <option value="2.0">2</option> 
+            <option value="3.0">3</option>
+            <option value="4.0">4</option>
+            <option value="5.0">5</option> 
+            <option value="6.0">6</option>
+            <option value="7.0">7</option>
+            <option value="8.0">8</option>
+            <option value="9.0">9</option>
+            <option value="10.0">10</option>            
+    </select>
+    <select id="select2"> 
+            <option value="6.5">51 Rye</option> 
+            <option value="4.5">Penchant Pils</option> 
+            <option value="6.0">American Brown</option>
+            <option value="5.5">Pagoda Pale Ale</option>
+            <option value="7.5">Battle IPA</option> 
+            <option value="5.7">Bulls-eyes</option>
+            <option value="9.2">LampLighter</option>
+            <option value="10.0">Woodstove</option>
+            <option value="5.2">White Marble Wit</option>
+            <option value="3.4">Trail Run</option>
+    </select>
+    <select id="select3"> 
+            <option value="5.0">5.0 ounces</option> 
+            <option value="8.0">8.0 ounces</option> 
+            <option value="10.0">10.0 ounces</option> 
+            <option value="16.0">16.0 ounces</option> 
+    </select>
+    </div>
+    <div>
+      <label for="weight">Total Weight in lbs:</label>
+      <input type="number" id="weight" name="weight" required size="50">
+<!--      <label for="ounces">Total ounces consumed:</label> -->
+<!--      <input type="number" id="ounces" name="ounces" required size="50"> -->
+    </div>
+    <div>
+<!--      <label for="abv">ABV:</label> -->
+<!--      <input type="number" id="abv" name="abv" required size="50"> --> 
+      <label for="hours">Hours drinking:</label>
+      <input type="number" id="hours" name="hours" required size="50">
+    </div>
+    </div>
+
+    <hr></hr>
+
+    <div>
+      <label for="bac">Blood Alcohol Content (BAC)</label>
+      <input type="number" id="bac" name="bac" required size="50">
+      <label for="bace">BAC (elapsed time)</label>
+      <input type="number" id="bace" name="bace" required size="50">
+     </div>
+
+    <div>
+        <label for="msg"></label>
+        <input type="text" id="msg" name="msg" required size="100">
+     </div>
+
+    <div>
+  </article>
+</section>
+
+<footer>
+    <div>
+       <button onclick="doWork();">Submit</button>
+       <button onclick="resetDivs();">Reset</button>
+    </div>
+</footer>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+
+
+<script>
+var desiredvalue;
+
+function resetDivs() {
+document.getElementById("bac").value='';
+document.getElementById("bace").value='';
+document.getElementById("hours").value='';
+document.getElementById("weight").value='';
+document.getElementById("msg").value='';
+document.getElementById("Male").checked=false;
+document.getElementById("Female").checked=false;
+};
+
+function doWork() {
+var arr = {'wt': document.getElementById("weight").value,
+            'tot': document.getElementById("select1").value,
+            'sz': document.getElementById("select3").value,
+            'abv': document.getElementById("select2").value,
+            'hs': document.getElementById("hours").value,
+            'ck': check(),
+};
+console.log(arr);
+$.post( "/receiver", arr, function(response) {var eff=response;
+var dat = eff.split(',');
+console.log(dat);
+document.getElementById("bac").value=dat[0];
+document.getElementById("bace").value=dat[1];
+document.getElementById("msg").value=dat[2];
+
+});
+};
+
+
+function check() {
+if (document.getElementById("Male").checked == true) {
+    desiredvalue = 0.68;
+    return desiredvalue;
+  } else {
+    desiredvalue = 0.55;
+    return desiredvalue;
+  }
+};
+
+</script>
+
+</body>
+</html>
